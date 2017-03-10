@@ -12,8 +12,15 @@ def spec_parser(content,outfp):
         logging.error("[%s] so many test cases" % (title0))
         return dic
 
+    nProcessers=''
+    nProcessers0=re.findall('\[number[ \t]+of[ \t]+processors[ \t]*:[ \t]*([0-9]+)[ \t]*\]', content, re.M|re.IGNORECASE)
+    if len(nProcessers0) == 1:
+        nProcessers=nProcessers0[0]
+
+    #logging.info("[%s]" % (nProcessers))
+
     title=title0[0]
-    s1=re.search("_(?P<tIF>int|fp|float)_(?P<tNo>[0-9]+)", title, re.IGNORECASE)
+    s1=re.search("_(?P<tIF>int|fp|float)_(?P<tCores>single|multi)", title, re.IGNORECASE)
     if s1 == None:
         logging.error("[%s] the title is wrong" % (title))
         return dic
@@ -26,10 +33,13 @@ def spec_parser(content,outfp):
         logging.error("[%s] unknow the parse type" % (title))
         return dic
 
-    if s1.group("tNo") > "1":
-        title="multicore_"+s1.group("tNo")+title
-    else:
+    if re.search("single", s1.group("tCores"), re.IGNORECASE):
         title="sincore"+title
+    elif re.search("multi", s1.group("tCores"), re.IGNORECASE):
+        title="multicore_"+nProcessers+title
+    else:
+        logging.error("[%s] unknow the core type" % (s1.group("tCores")))
+        return dic
 
     #logging.info("title[%s]" % (title))
 
@@ -55,7 +65,8 @@ def spec_parser(content,outfp):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(filename)s[%(lineno)s]: %(message)s")
     str1='''
-        [test: spec_fp_64]
+        [test: spec_fp_multiple]
+        [number of processors:64]
         Success 999.specrand base ref ratio=60.53, runtime=0.165197, power=0.00w, temp=0.00 deg, humidity=0.00%
         Success 483.xalancbmk base ref ratio=17.24, runtime=400.118959, power=0.00w, temp=0.00 deg, humidity=0.00%
         Success 400.perlbench base ref ratio=15.78, runtime=619.169026, power=0.00w, temp=0.00 deg, humidity=0.00%
