@@ -864,7 +864,7 @@ def run_kinds_commands(cmd_sec_name, server_run_command, tmp_logfile,
         logging.debug("only running the command %s in the remote host"
                         % command)
         flag = run_client_command(cmd_sec_name, tmp_logfile, kind_bench,
-                                    target, command)
+                                    target, command, bench_name)
     elif re.search('application', kind_bench):
 	if bench_name == "nginx":
             result = check_ping_response(nginx_clients_count)
@@ -881,21 +881,21 @@ def run_kinds_commands(cmd_sec_name, server_run_command, tmp_logfile,
         	    weighttp_thread.start()
 
 	    flag = run_client_command(cmd_sec_name, tmp_logfile, kind_bench,
-                                    target, command)
+                                    target, command, bench_name)
 
 	    # if any weighttp client threads are active, then kill it
             stop_weighttp_client(nginx_clients_count)
 
 	else:
             flag = run_client_command(cmd_sec_name, tmp_logfile, kind_bench,
-                                    target, command)
+                                    target, command, bench_name)
             flag = run_server_command(cmd_sec_name, server_run_command, tmp_logfile,
                        kind_bench, server)
     else:
         logging.debug("only running the command %s in the remote host"
                       % command)
         flag = run_client_command(cmd_sec_name, tmp_logfile, kind_bench,
-                                  target, command)
+                                  target, command, bench_name)
     return flag
 
 def parser_case(kind_bench, bench_name, parser_file, parser, infile, outfile):
