@@ -707,10 +707,10 @@ def run_remote_client_commands(exec_dir, kind_bench, commands, target,
 
 
 def run_client_command(cmd_sec_name, tmp_logfile, kind_bench,
-                        target, command):
+                        target, command, bench_name):
 
     fp = open(tmp_logfile, "a+")
-    if not re.search('application', kind_bench):
+    if not re.search('redis', bench_name):
         start_log = "%%%%%%         %s test start       %%%%%% \n" % cmd_sec_name
         fp.write(start_log)
         fp.write("<<<BEGIN TEST>>>\n")
@@ -748,24 +748,24 @@ def run_client_command(cmd_sec_name, tmp_logfile, kind_bench,
             [out, returncode] = run_remote_client_commands(host_exec_dir, kind_bench,
                                                     command, target, fp, fp)
     except error.ServRunError, e:
-	if not re.search('application', kind_bench):
+	if not re.search('redis', bench_name):
             fp.write("[status]: FAIL\n")
         sys.stdout.write(e)
         flag = -1
     else:
         if not returncode:
-	    if not re.search('application', kind_bench):
+	    if not re.search('redis', bench_name):
                 fp.write("[status]: PASS\n")
             flag = 1
         else:
-	    if not re.search('application', kind_bench):
+	    if not re.search('redis', bench_name):
                 fp.write("[status]: FAIL\n")
             flag = 0
 
     end = time.time()
     interval = end - start
     fp.write("Time in Seconds: %.3fs\n" % interval)
-    if not re.search('application', kind_bench):
+    if not re.search('redis', bench_name):
         fp.write("<<<END>>>\n")
         fp.write("%%%%%% test_end %%%%%%\n\n")
     fp.close()
